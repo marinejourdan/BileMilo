@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,5 +19,12 @@ class PhoneController extends AbstractController
         $jsonPhoneList=$serializer->serialize($phoneList,'json');
 
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK,[],true);
+    }
+
+    #[Route('/api/phones/{id}', name: 'app_phone')]
+    public function getDetailPhone(Phone $phone, SerializerInterface $serializer): JsonResponse
+    {
+        $jsonPhone = $serializer->serialize($phone, 'json');
+        return new JsonResponse($jsonPhone, Response::HTTP_OK, [], true);
     }
 }
