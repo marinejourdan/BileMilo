@@ -49,7 +49,7 @@ class User
     #[Groups("getAllUsers")]
     private ?string $Town = null;
 
-    #[ORM\ManyToOne(targetEntity: 'Client', fetch: 'EAGER', inversedBy: 'users')]
+    #[ORM\ManyToOne(targetEntity: 'Client', cascade:['persist'],fetch: 'EAGER', inversedBy: 'users')]
     #[Groups("getAllUsers")]
     private $client;
 
