@@ -21,7 +21,7 @@ class PhoneController extends AbstractController
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK,[],true);
     }
 
-    #[Route('/api/phones/{id}', name: 'app_phone')]
+    #[Route('/api/phones/{id}', name: 'app_phone_id')]
     public function getDetailPhone(Phone $phone, SerializerInterface $serializer): JsonResponse
     {
         $jsonPhone = $serializer->serialize($phone, 'json');

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -14,32 +15,55 @@ class User
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("getAllUsers")]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("getAllUsers")]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("getAllUsers")]
     private ?string $mail = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups("getAllUsers")]
     private ?int $numberStreet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups("getAllUsers")]
     private ?string $typeStreet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups("getAllUsers")]
     private ?string $nameStreet = null;
 
     #[ORM\Column]
+    #[Groups("getAllUsers")]
     private ?int $postal_code = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups("getAllUsers")]
     private ?string $Town = null;
 
+    #[ORM\ManyToOne(targetEntity: 'Client', fetch: 'EAGER', inversedBy: 'users')]
+    #[Groups("getAllUsers")]
+    private $client;
+
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(Client $client): self
+    {
+        $this->client = $client;
+
+        return $this;
+    }
     public function getId(): ?int
     {
         return $this->id;
