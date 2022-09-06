@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractController
 {
@@ -33,7 +34,6 @@ class UserController extends AbstractController
         return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
     }
 
-
     #[Route('/api/users/{id}', name: 'deleteUser', methods: ['DELETE'])]
     public function deleteUser(User $user, EntityManagerInterface $em): JsonResponse
     {
@@ -44,14 +44,31 @@ class UserController extends AbstractController
 
 
     #[Route('/api/users', name: 'createUser', methods: ['POST'])]
-    public function createUser(Request $request,  SerializerInterface $serializer, EntityManagerInterface $em, ClientRepository $clientRepository): JsonResponse
+    public function createUser(
+        Request $request,
+        SerializerInterface $serializer,
+        EntityManagerInterface $em,
+        ClientRepository $clientRepository,
+        ValidatorInterface $validator
+    ): JsonResponse
     {
         $user=$serializer->deserialize($request->getContent(), User::class,'json');
 
-
         $content= $request->toArray();
+
+        $errors= $validator->validate($user);
+
+        if ($errors->count() > 0){
+            return new JsonResponse(
+                $serializer->serialize($errors, 'json'),
+                JsonResponse::HTTP_BAD_REQUEST,
+                [],
+                true
+            );
+        }
         $client_id=$content['client_id'] ?? -1;
         $user->setClient($clientRepository->find($client_id));
+
         $em->persist($user);
         $em->flush();
 

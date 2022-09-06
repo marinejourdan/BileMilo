@@ -4,7 +4,10 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use http\Message;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User
@@ -16,14 +19,20 @@ class User
 
     #[ORM\Column(length: 255)]
     #[Groups("getAllUsers")]
+    #[Assert\NotBlank(message:"le nom du user est obligatoire")]
+    #[Assert\length(min:1, max:255, minMessage:"le titre doit daire au moins 1 caractère", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     #[Groups("getAllUsers")]
+    #[Assert\NotBlank(message:"le mail du user est obligatoire")]
+    #[Assert\length(min:1, max:255, minMessage:"le titre doit daire au moins 1 caractère", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255)]
     #[Groups("getAllUsers")]
+    #[Assert\NotBlank(message:"le prenom du user est obligatoire")]
+    #[Assert\length(min:3, max:255, minMessage:"le titre doit daire au moins 3 caractères", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
     private ?string $mail = null;
 
     #[ORM\Column(length: 255)]
@@ -47,10 +56,12 @@ class User
 
     #[ORM\Column(length: 255)]
     #[Groups("getAllUsers")]
+    #[Assert\NotBlank(message:"la ville du user est obligatoire")]
     private ?string $Town = null;
 
     #[ORM\ManyToOne(targetEntity: 'Client', cascade:['persist'],fetch: 'EAGER', inversedBy: 'users')]
     #[Groups("getAllUsers")]
+    #[Assert\NotBlank(message:"le client du user est obligatoire")]
     private $client;
 
     public function getClient(): ?Client
