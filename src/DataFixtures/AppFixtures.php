@@ -24,7 +24,7 @@ class AppFixtures extends Fixture
         $user_1= New User();
         $user_1->setName('Marley');
         $user_1->setSurname('bob');
-        $user_1->setMail('bob.marley@gmail.com');
+        $user_1->setEmail('bob.marley@gmail.com');
         $user_1->setPassword('proutprout');
         $user_1->setNumberStreet(4);
         $user_1->setNameStreet('des tilleuls');
