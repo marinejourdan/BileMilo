@@ -7,10 +7,17 @@ use App\Entity\Phone;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    public function load(ObjectManager $manager): void
+    private $userPasswordHasher;
+
+    public function __construct(UserPasswordHasherInterface $userPasswordHasher){
+        $this->userPasswordHasher=$userPasswordHasher;
+    }
+        public function load(ObjectManager $manager): void
     {
         $phone_1= New Phone();
         $phone_1->setName('Redmi Note Pro');
@@ -25,7 +32,7 @@ class AppFixtures extends Fixture
         $user_1->setName('Marley');
         $user_1->setSurname('bob');
         $user_1->setEmail('bob.marley@gmail.com');
-        $user_1->setPassword('proutprout');
+        $user_1->setPassword($this->userPasswordHasher->hashPassword($user_1, "password"));
         $user_1->setNumberStreet(4);
         $user_1->setNameStreet('des tilleuls');
         $user_1->setTypeStreet('rue');
