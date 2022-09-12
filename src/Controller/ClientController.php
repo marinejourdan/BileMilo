@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Client;
-use App\Entity\User;
 use App\Repository\ClientRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,19 +11,20 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserController extends AbstractController
+class ClientController extends AbstractController
 {
     #[Route('/api/clients', name: 'listClients', methods:['GET'])]
-    public function getAllClients(ClientRepository $clientRepository, SerializerInterface $serializer): JsonResponse
+    public function getAllClients(ClientRepository $clientRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
-        $clientList = $clientRepository->findAll();
+        $page=$request->get('page',1);
+        $limit=$request->get('limit', 2);
+        $clientList = $clientRepository->findAllWithPagination($page, $limit);
         $jsonClientList=$serializer->serialize($clientList,'json',['groups'=> 'getAllClients']);
+
         return new JsonResponse($jsonClientList, Response::HTTP_OK,[],true);
     }
 
