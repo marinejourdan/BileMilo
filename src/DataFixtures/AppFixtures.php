@@ -24,30 +24,29 @@ class AppFixtures extends Fixture
         $phone_1->setDescription('Un excellent rapport qualité-prix,un grand écran à l image fluide');
         $phone_1->setMake('Xiaomi');
         $phone_1->setPhoto('url a mettre');
-        $phone_1->setPrice(90.50);
+        $phone_1->setPrice(9050);
 
         $manager->persist($phone_1);
 
-        $user_1= New User();
-        $user_1->setName('Marley');
-        $user_1->setSurname('bob');
-        $user_1->setEmail('bob.marley@gmail.com');
+        $client_1= New Client();
+        $client_1->setName('Marley');
+        $client_1->setSurname('bob');
+        $client_1->setEmail('bob.marley@gmail.com');
+        $client_1->setNumberStreet(4);
+        $client_1->setNameStreet('des tilleuls');
+        $client_1->setTypeStreet('rue');
+        $client_1->setPostalCode('16210');
+        $client_1->setTown('st Quentin de Chalais');
+
+
+        $user_1=New User();
+        $user_1->setName('société alapointe');
+        $user_1->setEmail('alapointe@gmail.com');
         $user_1->setPassword($this->userPasswordHasher->hashPassword($user_1, "password"));
-        $user_1->setNumberStreet(4);
-        $user_1->setNameStreet('des tilleuls');
-        $user_1->setTypeStreet('rue');
-        $user_1->setPostalCode('16210');
-        $user_1->setTown('st Quenti de Chalais');
-
-        $client_1=New Client();
-        $client_1->setName('société alapointe');
-        $manager->persist($client_1);
-        $user_1->setClient($client_1);
-
-
-
-
         $manager->persist($user_1);
+        $client_1->setUser($user_1);
+
+        $manager->persist($client_1);
         $manager->flush();
     }
 }

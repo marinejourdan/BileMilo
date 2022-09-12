@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PhoneRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use phpDocumentor\Reflection\Types\Integer;
 
 #[ORM\Entity(repositoryClass: PhoneRepository::class)]
 class Phone
@@ -26,8 +27,8 @@ class Phone
     #[ORM\Column(length: 255)]
     private ?string $photo = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $price = null;
+    #[ORM\Column()]
+    private ?int $price = null;
 
     public function getId(): ?int
     {
@@ -82,12 +83,12 @@ class Phone
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): ?int
     {
         return $this->price;
     }
 
-    public function setPrice(string $price): self
+    public function setPrice(int $price): self
     {
         $this->price = $price;
 

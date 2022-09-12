@@ -20,16 +20,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups("getAllUsers")]
-    #[Assert\NotBlank(message:"le nom du user est obligatoire")]
-    #[Assert\length(min:1, max:255, minMessage:"le titre doit daire au moins 1 caractère", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
+    #[Groups("getAllClients")]
     private ?string $name = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups("getAllUsers")]
-    #[Assert\NotBlank(message:"le mail du user est obligatoire")]
-    #[Assert\length(min:1, max:255, minMessage:"le titre doit daire au moins 1 caractère", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
-    private ?string $surname = null;
 
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
@@ -43,39 +35,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Groups("getAllUsers")]
-    private ?int $numberStreet = null;
+    #[ORM\OneToMany(targetEntity: 'Client', cascade:['persist'],fetch: 'EAGER', mappedBy: 'user')]
+    #[Groups("getAllClients")]
+    private $clients;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups("getAllUsers")]
-    private ?string $typeStreet = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups("getAllUsers")]
-    private ?string $nameStreet = null;
-
-    #[ORM\Column]
-    #[Groups("getAllUsers")]
-    private ?int $postal_code = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups("getAllUsers")]
-    #[Assert\NotBlank(message:"la ville du user est obligatoire")]
-    private ?string $Town = null;
-
-    #[ORM\ManyToOne(targetEntity: 'Client', cascade:['persist'],fetch: 'EAGER', inversedBy: 'users')]
-    #[Groups("getAllUsers")]
-    #[Assert\NotBlank(message:"le client du user est obligatoire")]
-    private $client;
-
-    public function getClient(): ?Client
+    public function getClients(): ?Client
     {
-        return $this->client;
+        return $this->clients;
     }
-    public function setClient($client): self
+    public function setClients($clients): self
     {
-        $this->client = $client;
+        $this->clients = $clients;
 
         return $this;
     }
@@ -105,76 +75,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-    public function getSurname(): ?string
-    {
-        return $this->surname;
-    }
-
-    public function setSurname(string $surname): self
-    {
-        $this->surname = $surname;
-
-        return $this;
-    }
-    public function getNumberStreet(): ?int
-    {
-        return $this->numberStreet;
-    }
-
-    public function setNumberStreet(?int $numberStreet): self
-    {
-        $this->numberStreet = $numberStreet;
-
-        return $this;
-    }
-
-    public function getTypeStreet(): ?string
-    {
-        return $this->typeStreet;
-    }
-
-    public function setTypeStreet(?string $typeStreet): self
-    {
-        $this->typeStreet = $typeStreet;
-
-        return $this;
-    }
-
-    public function getNameStreet(): ?string
-    {
-        return $this->nameStreet;
-    }
-
-    public function setNameStreet(?string $nameStreet): self
-    {
-        $this->nameStreet = $nameStreet;
-
-        return $this;
-    }
-
-    public function getPostalCode(): ?int
-    {
-        return $this->postal_code;
-    }
-
-    public function setPostalCode(int $postal_code): self
-    {
-        $this->postal_code = $postal_code;
-
-        return $this;
-    }
-
-    public function getTown(): ?string
-    {
-        return $this->Town;
-    }
-
-    public function setTown(string $Town): self
-    {
-        $this->Town = $Town;
 
         return $this;
     }

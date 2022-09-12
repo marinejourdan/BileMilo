@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Client;
 use App\Entity\User;
 use App\Repository\ClientRepository;
 use App\Repository\UserRepository;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -18,45 +20,43 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController extends AbstractController
 {
-    #[Route('/api/users', name: 'listUsers', methods:['GET'])]
-    public function getAllUsers(UserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    #[Route('/api/clients', name: 'listClients', methods:['GET'])]
+    public function getAllClients(ClientRepository $clientRepository, SerializerInterface $serializer): JsonResponse
     {
-        $userList = $userRepository->findAll();
-        $jsonUserList=$serializer->serialize($userList,'json',['groups'=> 'getAllUsers']);
-
-        return new JsonResponse($jsonUserList, Response::HTTP_OK,[],true);
+        $clientList = $clientRepository->findAll();
+        $jsonClientList=$serializer->serialize($clientList,'json',['groups'=> 'getAllClients']);
+        return new JsonResponse($jsonClientList, Response::HTTP_OK,[],true);
     }
 
-    #[Route('/api/users/{id}', name: 'detailUser', methods:['GET'])]
-    public function getDetailUser(User $user, SerializerInterface $serializer): JsonResponse
+    #[Route('/api/users/{id}', name: 'detailClient', methods:['GET'])]
+    public function getDetailClient(Client $client, SerializerInterface $serializer): JsonResponse
     {
-        $jsonUser = $serializer->serialize($user, 'json',['groups'=> 'getAllUsers']);
-        return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
+        $jsonClient = $serializer->serialize($client, 'json',['groups'=> 'getAllClients']);
+        return new JsonResponse($jsonClient, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/api/users/{id}', name: 'deleteUser', methods: ['DELETE'])]
-    public function deleteUser(User $user, EntityManagerInterface $em): JsonResponse
+    #[Route('/api/clients/{id}', name: 'deleteClient', methods: ['DELETE'])]
+    public function deleteClient(Client $client, EntityManagerInterface $em): JsonResponse
     {
-        $em->remove($user);
+        $em->remove($client);
         $em->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
 
-    #[Route('/api/users', name: 'createUser', methods: ['POST'])]
-    public function createUser(
+    #[Route('/api/clients', name: 'createClient', methods: ['POST'])]
+    public function createClient(
         Request $request,
         SerializerInterface $serializer,
         EntityManagerInterface $em,
-        ClientRepository $clientRepository,
         ValidatorInterface $validator
     ): JsonResponse
     {
-        $user=$serializer->deserialize($request->getContent(), User::class,'json');
+        $user=$this->getUser();
 
+        $client=$serializer->deserialize($request->getContent(), Client::class,'json');
         $content= $request->toArray();
-
-        $errors= $validator->validate($user);
+        $errors= $validator->validate($client);
 
         if ($errors->count() > 0){
             return new JsonResponse(
@@ -66,28 +66,25 @@ class UserController extends AbstractController
                 true
             );
         }
-        $client_id=$content['client_id'] ?? -1;
-        $user->setClient($clientRepository->find($client_id));
 
-        $em->persist($user);
+        $client->setUser($user);
+        $em->persist($client);
         $em->flush();
 
-        $jsonUser=$serializer->serialize($user, 'json', ['groups'=> 'getAllUsers']);
-        return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
+        $jsonClient=$serializer->serialize($client, 'json', ['groups'=> 'getAllClients']);
+        return new JsonResponse($jsonClient, Response::HTTP_CREATED, [], true);
     }
 
-    #[Route('/api/users/{id}', name: 'updateUser', methods: ['PUT'])]
-    public function updateUser(Request $request,  User $currentUser, SerializerInterface $serializer, EntityManagerInterface $em, ClientRepository $clientRepository): JsonResponse
+    #[Route('/api/clients/{id}', name: 'updateClient', methods: ['PUT'])]
+    public function updateUser(Request $request,  Client $currentClient, SerializerInterface $serializer, EntityManagerInterface $em, UserRepository $userRepository): JsonResponse
     {
-        $updateUser=$serializer->deserialize($request->getContent(), User::class,'json', [AbstractNormalizer::OBJECT_TO_POPULATE=>$currentUser]);
-
-
+        $user=$this->getUser();
+        $updateClient=$serializer->deserialize($request->getContent(), Client::class,'json', [AbstractNormalizer::OBJECT_TO_POPULATE=>$currentClient]);
         $content= $request->toArray();
-        $client_id=$content['client_id'] ?? -1;
-        $updateUser->setClient($clientRepository->find($client_id));
-        $em->persist($updateUser);
-        $em->flush();
 
+        $updateClient->setUser($user);
+        $em->persist($updateClient);
+        $em->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }

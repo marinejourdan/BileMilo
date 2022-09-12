@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class PhoneController extends AbstractController
 {
-    #[Route('/api/phones', name: 'app_phone')]
+    #[Route('/api/phones', name: 'app_phone',methods:['GET'])]
     public function getAllPhones(PhoneRepository $phoneRepository, SerializerInterface $serializer): JsonResponse
     {
         $phoneList = $phoneRepository->findAll();
@@ -21,7 +21,7 @@ class PhoneController extends AbstractController
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK,[],true);
     }
 
-    #[Route('/api/phones/{id}', name: 'app_phone_id')]
+    #[Route('/api/phones/{id}', name: 'app_phone_id',methods:['GET'])]
     public function getDetailPhone(Phone $phone, SerializerInterface $serializer): JsonResponse
     {
         $jsonPhone = $serializer->serialize($phone, 'json');
