@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\PersistentCollection;
-use phpDocumentor\Reflection\Types\Collection;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -19,7 +17,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups("getAllClients")]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -27,7 +24,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $name = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups("getAllClients")]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -43,13 +39,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups("getAllClients")]
     private $clients;
 
-    public function getClients(): ?PersistentCollection
+    public function getClients(): ?Client
     {
         return $this->clients;
     }
-    public function setClients(PersistentCollection $clients):self
+    public function setClients($clients): self
     {
         $this->clients = $clients;
+
         return $this;
     }
 

@@ -52,7 +52,6 @@ class Client
     #[Assert\NotBlank(message:"la ville du user est obligatoire")]
     private ?string $Town = null;
 
-    #[Groups("getAllClients")]
     #[ORM\ManyToOne(targetEntity: 'User', fetch: 'EAGER', inversedBy: 'clients')]
     private $user;
 
@@ -85,6 +84,17 @@ class Client
         return $this;
     }
 
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(Client $client): self
+    {
+        $this->client = $client;
+
+        return $this;
+    }
 
     public function getEmail(): ?string
     {

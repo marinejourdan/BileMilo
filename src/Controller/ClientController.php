@@ -14,53 +14,30 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Contracts\Cache\ItemInterface;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ClientController extends AbstractController
 {
     #[Route('/api/clients', name: 'listClients', methods:['GET'])]
-    public function getAllClients(
-        ClientRepository $clientRepository,
-        SerializerInterface $serializer,
-        Request $request,
-        TagAwareCacheInterface $cache
-    ): JsonResponse
+    public function getAllClients(ClientRepository $clientRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
         $page=$request->get('page',1);
-        $limit=$request->get('limit', 1);
+        $limit=$request->get('limit', 2);
+        $clientList = $clientRepository->findAllWithPagination($page, $limit);
+        $jsonClientList=$serializer->serialize($clientList,'json',['groups'=> 'getAllClients']);
 
-        $idCache="getAllClients".$page."-".$limit;
-
-        $jsonClientList=$cache->get($idCache, function (ItemInterface $item) use ($clientRepository, $page, $limit, $serializer){
-            echo ("l'element n'est pas encore en cache");
-            $item->tag("clientsCache");
-            $clientList = $clientRepository->findAllWithPagination($page, $limit);
-            $jsonClientList=$serializer->serialize($clientList,'json',['groups'=> 'getAllClients']);
-            return $jsonClientList;
-        });
         return new JsonResponse($jsonClientList, Response::HTTP_OK,[],true);
     }
 
     #[Route('/api/users/{id}', name: 'detailClient', methods:['GET'])]
-    public function getDetailClient(
-        Client $client,
-        SerializerInterface
-        $serializer
-    ): JsonResponse
+    public function getDetailClient(Client $client, SerializerInterface $serializer): JsonResponse
     {
-        $jsonClient = $serializer->serialize($user, 'json',['groups'=> 'getAllClients']);
+        $jsonClient = $serializer->serialize($client, 'json',['groups'=> 'getAllClients']);
         return new JsonResponse($jsonClient, Response::HTTP_OK, [], true);
     }
 
     #[Route('/api/clients/{id}', name: 'deleteClient', methods: ['DELETE'])]
-    public function deleteClient(
-        Client $client,
-        EntityManagerInterface $em,
-        TagAwareCacheInterface $cache
-    ): JsonResponse
+    public function deleteClient(Client $client, EntityManagerInterface $em): JsonResponse
     {
-        $cache->invalidateTags(["clientsCache"]);
         $em->remove($client);
         $em->flush();
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
@@ -72,11 +49,11 @@ class ClientController extends AbstractController
         Request $request,
         SerializerInterface $serializer,
         EntityManagerInterface $em,
-        ValidatorInterface $validator,
-        TagAwareCacheInterface $cache
+        ValidatorInterface $validator
     ): JsonResponse
     {
         $user=$this->getUser();
+
         $client=$serializer->deserialize($request->getContent(), Client::class,'json');
         $content= $request->toArray();
         $errors= $validator->validate($client);
@@ -91,33 +68,26 @@ class ClientController extends AbstractController
         }
 
         $client->setUser($user);
-        $cache->invalidateTags(["clientsCache"]);
         $em->persist($client);
         $em->flush();
+
         $jsonClient=$serializer->serialize($client, 'json', ['groups'=> 'getAllClients']);
         return new JsonResponse($jsonClient, Response::HTTP_CREATED, [], true);
     }
 
     #[Route('/api/clients/{id}', name: 'updateClient', methods: ['PUT'])]
-    public function updateClient(
-        Request $request,
-        Client $currentClient,
-        SerializerInterface $serializer,
-        EntityManagerInterface $em,
-        UserRepository $userRepository,
-        TagAwareCacheInterface $cache
-    ): JsonResponse
+    public function updateUser(Request $request,  Client $currentClient, SerializerInterface $serializer, EntityManagerInterface $em, UserRepository $userRepository): JsonResponse
     {
         $user=$this->getUser();
         $updateClient=$serializer->deserialize($request->getContent(), Client::class,'json', [AbstractNormalizer::OBJECT_TO_POPULATE=>$currentClient]);
         $content= $request->toArray();
 
         $updateClient->setUser($user);
-        $cache->invalidateTags(["clientsCache"]);
         $em->persist($updateClient);
         $em->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
+
 
 }

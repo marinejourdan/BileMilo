@@ -43,9 +43,7 @@ class ClientRepository extends ServiceEntityRepository
             ->setFirstResult(($page-1)*$limit)
             ->setMaxResults($limit);
 
-            $query = $qb->getQuery();
-            $query->setFetchMode(Client::class, "User", \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
-            return $query->getResult();
+        return $qb->getQuery()->getResult();
 
     }
 
