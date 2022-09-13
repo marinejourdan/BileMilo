@@ -16,24 +16,34 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class PhoneController extends AbstractController
 {
     #[Route('/api/phones', name: 'app_phone',methods:['GET'])]
-    public function getAllPhones(PhoneRepository $phoneRepository, SerializerInterface $serializer, Request $request, TagAwareCacheInterface $cache): JsonResponse
+    public function getAllPhones(
+        PhoneRepository $phoneRepository,
+        SerializerInterface $serializer,
+        Request $request,
+        TagAwareCacheInterface $cache
+    ): JsonResponse
     {
         $page=$request->get('page',1);
-        $limit=$request->get('limit', 2);
+        $limit=$request->get('limit', 3);
 
         $idCache="getAllPhones".$page."-".$limit;
-        $phoneList=$cache->get($idCache, function (ItemInterface $item) use ($phoneRepository, $page, $limit){
+
+        $jsonPhoneList=$cache->get($idCache, function (ItemInterface $item) use ($phoneRepository, $page, $limit, $serializer){
             echo ("l'element n'est pas encore en cache");
             $item->tag("phonesCache");
-            return $phoneRepository->findAllWithPagination($page, $limit);
+            $phoneList=$phoneRepository->findAllWithPagination($page, $limit);
+            $jsonPhoneList=$serializer->serialize($phoneList,'json');
+            return $jsonPhoneList;
         });
 
-        $jsonPhoneList=$serializer->serialize($phoneList,'json');
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK,[],true);
     }
 
     #[Route('/api/phones/{id}', name: 'app_phone_id',methods:['GET'])]
-    public function getDetailPhone(Phone $phone, SerializerInterface $serializer): JsonResponse
+    public function getDetailPhone(
+        Phone $phone,
+        SerializerInterface $serializer
+    ): JsonResponse
     {
         $jsonPhone = $serializer->serialize($phone, 'json');
         return new JsonResponse($jsonPhone, Response::HTTP_OK, [], true);
