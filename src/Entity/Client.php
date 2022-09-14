@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ClientRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
@@ -13,17 +13,17 @@ class Client
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     #[Assert\NotBlank(message:"le nom du client est obligatoire")]
     #[Assert\length(min:1, max:255, minMessage:"le titre doit daire au moins 1 caractère", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     #[Assert\NotBlank(message:"le mail du client est obligatoire")]
     #[Assert\length(min:1, max:255, minMessage:"le titre doit faire au moins 1 caractère", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
     private ?string $surname = null;
@@ -32,23 +32,23 @@ class Client
     private ?string $email = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     private ?int $numberStreet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     private ?string $typeStreet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     private ?string $nameStreet = null;
 
     #[ORM\Column]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     private ?int $postal_code = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     #[Assert\NotBlank(message:"la ville du user est obligatoire")]
     private ?string $Town = null;
 

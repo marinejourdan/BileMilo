@@ -70,12 +70,6 @@ class AppFixtures extends Fixture
         $client_1->setPostalCode('16210');
         $client_1->setTown('st Quentin de Chalais');
 
-        $user_1=New User();
-        $user_1->setName('société alapointe');
-        $user_1->setEmail('alapointe@gmail.com');
-        $user_1->setPassword($this->userPasswordHasher->hashPassword($user_1, "password"));
-        $manager->persist($user_1);
-        $client_1->setUser($user_1);
 
         $user_1=New User();
         $user_1->setName('société alapointe');
@@ -100,6 +94,7 @@ class AppFixtures extends Fixture
         $client_1= New Client();
         $client_1->setName('Marley');
         $client_1->setSurname('bob');
+        $client_1->setEmail('bob@gmail.com');
         $client_1->setPostalCode('16210');
         $client_1->setTown('st Quentin de Chalais');
 

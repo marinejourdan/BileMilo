@@ -6,7 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Groups;
 use http\Message;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -20,7 +20,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     private ?string $name = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -36,7 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\OneToMany(targetEntity: 'Client', cascade:['persist'],fetch: 'EAGER', mappedBy: 'user')]
-    #[Groups("getAllClients")]
+    #[Groups(["getAllClients"])]
     private $clients;
 
     public function getClients(): ?Client

@@ -6,14 +6,15 @@ use App\Entity\Client;
 use App\Repository\ClientRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use JMS\Serializer\SerializerInterface;
 
 class ClientController extends AbstractController
 {
@@ -23,7 +24,8 @@ class ClientController extends AbstractController
         $page=$request->get('page',1);
         $limit=$request->get('limit', 2);
         $clientList = $clientRepository->findAllWithPagination($page, $limit);
-        $jsonClientList=$serializer->serialize($clientList,'json',['groups'=> 'getAllClients']);
+        $context = SerializationContext::create()->setGroups(['getAllClients']);
+        $jsonClientList=$serializer->serialize($clientList,'json',$context);
 
         return new JsonResponse($jsonClientList, Response::HTTP_OK,[],true);
     }
@@ -31,7 +33,8 @@ class ClientController extends AbstractController
     #[Route('/api/users/{id}', name: 'detailClient', methods:['GET'])]
     public function getDetailClient(Client $client, SerializerInterface $serializer): JsonResponse
     {
-        $jsonClient = $serializer->serialize($client, 'json',['groups'=> 'getAllClients']);
+        $context = SerializationContext::create()->setGroups(['getAllClients']);
+        $jsonClient = $serializer->serialize($client, 'json', $context);
         return new JsonResponse($jsonClient, Response::HTTP_OK, [], true);
     }
 
@@ -66,12 +69,12 @@ class ClientController extends AbstractController
                 true
             );
         }
-
         $client->setUser($user);
         $em->persist($client);
         $em->flush();
 
-        $jsonClient=$serializer->serialize($client, 'json', ['groups'=> 'getAllClients']);
+        $context = SerializationContext::create()->setGroups(['getAllClients']);
+        $jsonClient=$serializer->serialize($client, 'json', $context);
         return new JsonResponse($jsonClient, Response::HTTP_CREATED, [], true);
     }
 
