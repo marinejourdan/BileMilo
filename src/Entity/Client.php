@@ -28,7 +28,8 @@ class Client
     #[Assert\length(min:1, max:255, minMessage:"le titre doit faire au moins 1 caractère", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
     private ?string $surname = null;
 
-    #[ORM\Column(length: 180, unique: true)]
+    #[Groups(["getAllClients"])]
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(nullable: true)]
