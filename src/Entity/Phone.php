@@ -3,10 +3,20 @@
 namespace App\Entity;
 
 use App\Repository\PhoneRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use phpDocumentor\Reflection\Types\Integer;
+use Hateoas\Configuration\Annotation as Hateoas;
+use JMS\Serializer\Annotation\Groups;
 
+/**
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "detailPhone",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getAllPhones")
+ * )
+ */
 #[ORM\Entity(repositoryClass: PhoneRepository::class)]
 class Phone
 {
@@ -16,18 +26,23 @@ class Phone
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['getAllPhones'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['getAllPhones'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['getAllPhones'])]
     private ?string $make = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['getAllPhones'])]
     private ?string $photo = null;
 
     #[ORM\Column()]
+    #[Groups(['getAllPhones'])]
     private ?int $price = null;
 
     public function getId(): ?int

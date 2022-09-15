@@ -3,65 +3,99 @@
 namespace App\Entity;
 
 use App\Repository\ClientRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Hateoas\Configuration\Annotation as Hateoas;
 use JMS\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation\Since;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "detailClient",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getAllClients")
+ * )
+ * @Hateoas\Relation(
+ *      "delete",
+ *      href = @Hateoas\Route(
+ *          "deleteClient",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getAllClients")
+ * )
+ * @Hateoas\Relation(
+ *      "update",
+ *      href = @Hateoas\Route(
+ *          "updateClient",
+ *          parameters = { "id" = "expr(object.getId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="getAllClients")
+ * )
+ */
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(["getAllClients"])]
+    #[Groups(['getAllClients'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["getAllClients"])]
-    #[Assert\NotBlank(message:"le nom du client est obligatoire")]
-    #[Assert\length(min:1, max:255, minMessage:"le titre doit daire au moins 1 caractère", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
+    #[Groups(['getAllClients'])]
+    #[Assert\NotBlank(message: 'le nom du client est obligatoire')]
+    #[Assert\length(min: 1, max: 255, minMessage: 'le titre doit daire au moins 1 caractère', maxMessage: ' le titre ne doit pas dépasser 255 caracteres')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["getAllClients"])]
-    #[Assert\NotBlank(message:"le mail du client est obligatoire")]
-    #[Assert\length(min:1, max:255, minMessage:"le titre doit faire au moins 1 caractère", maxMessage:" le titre ne doit pas dépasser 255 caracteres")]
+    #[Groups(['getAllClients'])]
+    #[Assert\NotBlank(message: 'le mail du client est obligatoire')]
+    #[Assert\length(min: 1, max: 255, minMessage: 'le titre doit faire au moins 1 caractère', maxMessage: ' le titre ne doit pas dépasser 255 caracteres')]
     private ?string $surname = null;
 
-    #[Groups(["getAllClients"])]
+    #[Groups(['getAllClients'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(["getAllClients"])]
+    #[Groups(['getAllClients'])]
     private ?int $numberStreet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["getAllClients"])]
+    #[Groups(['getAllClients'])]
     private ?string $typeStreet = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["getAllClients"])]
+    #[Groups(['getAllClients'])]
     private ?string $nameStreet = null;
 
     #[ORM\Column]
-    #[Groups(["getAllClients"])]
+    #[Groups(['getAllClients'])]
     private ?int $postal_code = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["getAllClients"])]
-    #[Assert\NotBlank(message:"la ville du user est obligatoire")]
+    #[Groups(['getAllClients'])]
+    #[Assert\NotBlank(message: 'la ville du user est obligatoire')]
     private ?string $Town = null;
 
     #[ORM\ManyToOne(targetEntity: 'User', fetch: 'EAGER', inversedBy: 'clients')]
     private $user;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['getAllClients'])]
+    #[Since('2.0')]
+    private ?string $comment = null;
 
     public function getUser()
     {
         return $this->user;
     }
 
-    public function setUser (?User $user): self
+    public function setUser(?User $user): self
     {
         $this->user = $user;
 
@@ -120,6 +154,7 @@ class Client
 
         return $this;
     }
+
     public function getNumberStreet(): ?int
     {
         return $this->numberStreet;
@@ -176,6 +211,18 @@ class Client
     public function setTown(string $Town): self
     {
         $this->Town = $Town;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): self
+    {
+        $this->comment = $comment;
 
         return $this;
     }

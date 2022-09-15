@@ -4,12 +4,9 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use JMS\Serializer\Annotation\Groups;
-use http\Message;
-use Symfony\Component\Validator\Constraints as Assert;
-
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -20,7 +17,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(["getAllClients"])]
+    #[Groups(['getAllClients'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -35,14 +32,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\OneToMany(targetEntity: 'Client', cascade:['persist'],fetch: 'EAGER', mappedBy: 'user')]
-    #[Groups(["getAllClients"])]
+    #[ORM\OneToMany(targetEntity: 'Client', cascade: ['persist'], fetch: 'EAGER', mappedBy: 'user')]
+    #[Groups(['getAllClients'])]
     private $clients;
 
     public function getClients(): ?Client
     {
         return $this->clients;
     }
+
     public function setClients($clients): self
     {
         $this->clients = $clients;
@@ -89,7 +87,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
-    public function getUsername(): string {
+    public function getUsername(): string
+    {
         return $this->getUserIdentifier();
     }
 
@@ -134,6 +133,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
-
     }
 }
