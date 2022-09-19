@@ -57,13 +57,14 @@ class ClientController extends AbstractController
     ): JsonResponse {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', 6);
+        $user = $this->getUser();
 
         $idCache = 'getAllClients'.$page.'-'.$limit;
-        $clientList = $cache->get($idCache, function (ItemInterface $item) use ($clientRepository, $page, $limit) {
+        $clientList = $cache->get($idCache, function (ItemInterface $item) use ($user, $clientRepository, $page, $limit) {
             echo "l element n'est pas encore en cache";
             $item->tag('ClientsCache');
 
-            return $clientRepository->findAllWithPagination($page, $limit);
+            return $clientRepository->findByUserWithPagination($user, $page, $limit);
         });
 
         $context = SerializationContext::create()->setGroups(['getAllClients']);
