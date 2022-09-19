@@ -8,6 +8,9 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,6 +22,32 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ClientController extends AbstractController
 {
+    /**
+     * Cette méthode permet de récupérer l'ensemble des clients.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Retourne la liste des clients",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Client::class, groups={"getAllClients"}))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="La page que l'on veut récupérer",
+     *     @OA\Schema(type="int")
+     * )
+     * @OA\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Le nombre d'éléments que l'on veut récupérer",
+     *     @OA\Schema(type="int")
+     * )
+     *
+     * @throws InvalidArgumentException
+     */
     #[Route('/api/clients', name: 'listClients', methods: ['GET'])]
     public function getAllClients(
         TagAwareCacheInterface $cache,
@@ -38,15 +67,31 @@ class ClientController extends AbstractController
         });
 
         $context = SerializationContext::create()->setGroups(['getAllClients']);
-        $context->setVersion('2.0');
         $jsonClientList = $serializer->serialize($clientList, 'json', $context);
 
         return new JsonResponse($jsonClientList, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Cette méthode permet de récupérer le détail d'un client.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Retourne le détail d'un client",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Client::class, groups={"getAllClients"}))
+     *     )
+     * )
+     *
+     * @throws InvalidArgumentException
+     */
     #[Route('/api/clients/{id}', name: 'detailClient', methods: ['GET'])]
-    public function getDetailClient(Client $client, SerializerInterface $serializer): JsonResponse
-    {
+    public function getDetailClient(
+        Client $client,
+        SerializerInterface $serializer
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('CLIENT_ACCESS', $client);
         $context = SerializationContext::create()->setGroups(['getAllClients']);
         $context->setVersion('1.0');
         $jsonClient = $serializer->serialize($client, 'json', $context);
@@ -55,21 +100,87 @@ class ClientController extends AbstractController
     }
 
     #[Route('/api/clients/{id}', name: 'deleteClient', methods: ['DELETE'])]
-    public function deleteClient(Client $client, EntityManagerInterface $em): JsonResponse
-    {
+    public function deleteClient(
+        Client $client,
+        EntityManagerInterface $em
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('CLIENT_ACCESS', $client);
         $em->remove($client);
         $em->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/clients",
+     *     method="POST"
+     * )
+     * @OA\RequestBody(
+     *     description="Ajouter un client",
+     *     required=true,
+     *     @OA\MediaType(
+     *         mediaType="application/json",
+     *         @OA\Schema(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="name",
+     *                 description="First name of the new user",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="surname",
+     *                 description="Last name of the new user",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="email",
+     *                 description="Email of the new user",
+     *                 type="string"
+     *             ),
+     *            @OA\Property(
+     *                 property="numberStreet",
+     *                 description="Email of the new user",
+     *                 type="int"
+     *             ),
+     *            @OA\Property(
+     *                 property="typeStreet",
+     *                 description="Email of the new user",
+     *                 type="string"
+     *             ),
+     *            @OA\Property(
+     *                 property="nameStreet",
+     *                 description="Email of the new user",
+     *                 type="string"
+     *             ),
+     *           @OA\Property(
+     *                 property="Town",
+     *                 description="Email of the new user",
+     *                 type="string"
+     *             ),
+     *          @OA\Property(
+     *                 property="postal_code",
+     *                 description="Id of mobile phone",
+     *                 type="integer"
+     *             ),
+     *         )
+     *     )
+     * )
+     * @OA\Response(
+     *     response=201,
+     *     description="OK"
+     * )
+     */
     #[Route('/api/clients', name: 'createClient', methods: ['POST'])]
     public function createClient(
         Request $request,
         SerializerInterface $serializer,
         EntityManagerInterface $em,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        TagAwareCacheInterface $cache,
+        Client $client
     ): JsonResponse {
+        $this->denyAccessUnlessGranted('CLIENT_ACCESS', $client);
         $user = $this->getUser();
 
         $client = $serializer->deserialize($request->getContent(), Client::class, 'json');
@@ -87,6 +198,7 @@ class ClientController extends AbstractController
         $client->setComment('gnagna');
         $em->persist($client);
         $em->flush();
+        $cache->invalidateTags(['getAllClients']);
 
         $context = SerializationContext::create()->setGroups(['getAllClients']);
         $jsonClient = $serializer->serialize($client, 'json', $context);
@@ -94,6 +206,66 @@ class ClientController extends AbstractController
         return new JsonResponse($jsonClient, Response::HTTP_CREATED, [], true);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/clients",
+     *     method="PUT"
+     * )
+     * @OA\RequestBody(
+     *     description="Ajouter un client",
+     *     required=true,
+     *     @OA\MediaType(
+     *         mediaType="application/json",
+     *         @OA\Schema(
+     *             type="object",
+     *             @OA\Property(
+     *                 property="name",
+     *                 description="First name of the new user",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="surname",
+     *                 description="Last name of the new user",
+     *                 type="string"
+     *             ),
+     *             @OA\Property(
+     *                 property="email",
+     *                 description="Email of the new user",
+     *                 type="string"
+     *             ),
+     *            @OA\Property(
+     *                 property="numberStreet",
+     *                 description="Email of the new user",
+     *                 type="int"
+     *             ),
+     *            @OA\Property(
+     *                 property="typeStreet",
+     *                 description="Email of the new user",
+     *                 type="string"
+     *             ),
+     *            @OA\Property(
+     *                 property="nameStreet",
+     *                 description="Email of the new user",
+     *                 type="string"
+     *             ),
+     *           @OA\Property(
+     *                 property="Town",
+     *                 description="Email of the new user",
+     *                 type="string"
+     *             ),
+     *          @OA\Property(
+     *                 property="postal_code",
+     *                 description="Id of mobile phone",
+     *                 type="integer"
+     *             ),
+     *         )
+     *     )
+     * )
+     * @OA\Response(
+     *     response=201,
+     *     description="OK"
+     * )
+     */
     #[Route('/api/clients/{id}', name: 'updateClient', methods: ['PUT'])]
     public function updateUser(
         Request $request,

@@ -43,40 +43,64 @@ class Client
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['getAllClients'])]
+
     private ?int $id = null;
 
+    /**
+     * @Groups({"default", "create", "update"})
+     * @Assert\NotBlank(groups={"default", "create"})
+     */
     #[ORM\Column(length: 255)]
     #[Groups(['getAllClients'])]
     #[Assert\NotBlank(message: 'le nom du client est obligatoire')]
     #[Assert\length(min: 1, max: 255, minMessage: 'le titre doit daire au moins 1 caractère', maxMessage: ' le titre ne doit pas dépasser 255 caracteres')]
     private ?string $name = null;
-
+    /**
+     * @Groups({"default", "create", "update"})
+     * @Assert\NotBlank(groups={"default", "create"})
+     */
     #[ORM\Column(length: 255)]
     #[Groups(['getAllClients'])]
     #[Assert\NotBlank(message: 'le mail du client est obligatoire')]
     #[Assert\length(min: 1, max: 255, minMessage: 'le titre doit faire au moins 1 caractère', maxMessage: ' le titre ne doit pas dépasser 255 caracteres')]
     private ?string $surname = null;
-
+    /**
+     * @Groups({"default", "create", "update"})
+     * @Assert\NotBlank(groups={"default", "create"})
+     */
     #[Groups(['getAllClients'])]
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
-
+    /**
+     * @Groups({"default", "create", "update"})
+     * @Assert\NotBlank(groups={"default", "create"})
+     */
     #[ORM\Column(nullable: true)]
     #[Groups(['getAllClients'])]
     private ?int $numberStreet = null;
-
+    /**
+     * @Groups({"default", "create", "update"})
+     */
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['getAllClients'])]
     private ?string $typeStreet = null;
-
+    /**
+     * @Groups({"default", "create", "update"})
+     */
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['getAllClients'])]
     private ?string $nameStreet = null;
-
+    /**
+     * @Groups({"default", "create", "update"})
+     * @Assert\NotBlank(groups={"default", "create"})
+     */
     #[ORM\Column]
     #[Groups(['getAllClients'])]
     private ?int $postal_code = null;
-
+    /**
+     * @Groups({"default", "create", "update"})
+     * @Assert\NotBlank(groups={"default", "create"})
+     */
     #[ORM\Column(length: 255)]
     #[Groups(['getAllClients'])]
     #[Assert\NotBlank(message: 'la ville du user est obligatoire')]
@@ -86,7 +110,6 @@ class Client
     private $user;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['getAllClients'])]
     #[Since('2.0')]
     private ?string $comment = null;
 

@@ -6,6 +6,9 @@ use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,6 +19,20 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class PhoneController extends AbstractController
 {
+    /**
+     * Cette méthode permet de récupérer l'ensemble des téléphones.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Retourne la liste des clients",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Phone::class))
+     *     )
+     * )
+     *
+     * @throws InvalidArgumentException
+     */
     #[Route('/api/phones', name: 'app_phone', methods: ['GET'])]
     public function getAllPhones(
         PhoneRepository $phoneRepository,
@@ -40,6 +57,20 @@ class PhoneController extends AbstractController
         return new JsonResponse($jsonPhoneList, Response::HTTP_OK, [], true);
     }
 
+    /**
+     * Cette méthode permet de récupérer le détail d'un téléphone.
+     *
+     * @OA\Response(
+     *     response=200,
+     *     description="Retourne le détail d'un téléphone",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Phone::class))
+     *     )
+     * )
+     *
+     * @throws InvalidArgumentException
+     */
     #[Route('/api/phones/{id}', name: 'detailPhone', methods: ['GET'])]
     public function getDetailPhone(
         Phone $phone,
