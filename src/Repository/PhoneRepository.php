@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Phone;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -39,12 +41,12 @@ class PhoneRepository extends ServiceEntityRepository
         }
     }
 
-    public function findAllWithPagination($page, $limit){
-        $qb=$this->createQueryBuilder('b')
-            ->setFirstResult(($page-1)*$limit)
+    public function findAllWithPagination(int $page, int $limit): Collection
+    {
+        $qb = $this->createQueryBuilder('b')
+            ->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit);
 
         return $qb->getQuery()->getResult();
-
     }
 }

@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Client;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -41,7 +42,7 @@ class ClientRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByUserWithPagination(User $user, $page, $limit)
+    public function findByUserWithPagination(User $user, int $page, int $limit): Collection
     {
         $qb = $this->createQueryBuilder('c')
             ->where('c.user = :user')

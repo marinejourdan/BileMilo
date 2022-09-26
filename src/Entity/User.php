@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -36,12 +38,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['getAllClients'])]
     private $clients;
 
-    public function getClients(): ?Client
+    public function getClients(): ?Collection
     {
         return $this->clients;
     }
 
-    public function setClients($clients): self
+    public function setClients(Collection $clients): self
     {
         $this->clients = $clients;
 
@@ -129,8 +131,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @see UserInterface
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
-
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
     }
 }

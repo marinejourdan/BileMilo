@@ -43,7 +43,6 @@ class Client
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['getAllClients'])]
-
     private ?int $id = null;
 
     /**
@@ -113,7 +112,7 @@ class Client
     #[Since('2.0')]
     private ?string $comment = null;
 
-    public function getUser()
+    public function getUser(): User
     {
         return $this->user;
     }
