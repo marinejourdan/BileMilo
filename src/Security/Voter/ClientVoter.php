@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class PostVoter extends Voter
+class ClientVoter extends Voter
 {
     public const ACCESS = 'CLIENT_ACCESS';
 

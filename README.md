@@ -40,3 +40,7 @@ Modification d'un client: https://127.0.0.1:8000/api/clients\{id} (PUT)
 
 ### Création d'un client
 Modification d'un client: https://127.0.0.1:8000/api/clients (POST)
+
+
+Lien vers la documentation :
+https://127.0.0.1:8000/api/doc

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Client;
 use App\Repository\ClientRepository;
 use App\Repository\UserRepository;
+use App\Security\Voter\ClientVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
@@ -55,8 +56,8 @@ class ClientController extends AbstractController
         SerializerInterface $serializer,
         Request $request
     ): JsonResponse {
-        $page = $request->get('page', 1);
-        $limit = $request->get('limit', 6);
+        $page = $request->query->getInt('page', 1);
+        $limit = $request->query->getInt('limit', 3);
         $user = $this->getUser();
 
         $idCache = 'getAllClients'.$page.'-'.$limit;
@@ -92,7 +93,7 @@ class ClientController extends AbstractController
         Client $client,
         SerializerInterface $serializer
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('CLIENT_ACCESS', $client);
+        $this->denyAccessUnlessGranted(ClientVoter::ACCESS, $client);
         $context = SerializationContext::create()->setGroups(['getAllClients']);
         $context->setVersion('1.0');
         $jsonClient = $serializer->serialize($client, 'json', $context);
@@ -105,7 +106,7 @@ class ClientController extends AbstractController
         Client $client,
         EntityManagerInterface $em
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('CLIENT_ACCESS', $client);
+        $this->denyAccessUnlessGranted(ClientVoter::ACCESS, $client);
         $em->remove($client);
         $em->flush();
 
@@ -181,7 +182,7 @@ class ClientController extends AbstractController
         TagAwareCacheInterface $cache,
         Client $client
     ): JsonResponse {
-        $this->denyAccessUnlessGranted('CLIENT_ACCESS', $client);
+
         $user = $this->getUser();
 
         $client = $serializer->deserialize($request->getContent(), Client::class, 'json');
