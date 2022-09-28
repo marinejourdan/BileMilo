@@ -4,13 +4,9 @@
 git@github.com:marinejourdan/Bilemilo.git
 Le contenu sera téléchargé dans le dossier où vous vous situez
 Paramêtrer le.env.dist avec vos propres données.
+Installation des dépendances: ``composer install``
 Démarrage du serveur: ``symfony server:start``
 Chargement des fixtures:``php bin/console doctrine:fixtures:load``
-
-**Composer install**
-Executez : ``` composer install ````
-
-## Ressources:
 
 ### connexion :
 https://127.0.0.1:8000/api/login_check (POST)
