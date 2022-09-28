@@ -8,6 +8,8 @@ Démarrage du serveur: ``symfony server:start``
 Chargement des fixtures:``php bin/console doctrine:fixtures:load``
 
 **Composer install**
+Executez : ``` composer install ````
+
 ## Ressources:
 
 ### connexion :
