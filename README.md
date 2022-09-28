@@ -7,6 +7,7 @@ Paramêtrer le.env.dist avec vos propres données.
 Démarrage du serveur: ``symfony server:start``
 Chargement des fixtures:``php bin/console doctrine:fixtures:load``
 
+**Composer install**
 ## Ressources:
 
 ### connexion :
@@ -39,7 +40,7 @@ détail d'un client: https://127.0.0.1:8000/api/clients\{id} (GET)
 Modification d'un client: https://127.0.0.1:8000/api/clients\{id} (PUT)
 
 ### Création d'un client
-Modification d'un client: https://127.0.0.1:8000/api/clients (POST)
+Création d'un client: https://127.0.0.1:8000/api/clients (POST)
 
 
 Lien vers la documentation :
