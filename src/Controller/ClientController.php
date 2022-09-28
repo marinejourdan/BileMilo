@@ -62,7 +62,6 @@ class ClientController extends AbstractController
 
         $idCache = 'getAllClients'.$page.'-'.$limit;
         $clientList = $cache->get($idCache, function (ItemInterface $item) use ($user, $clientRepository, $page, $limit) {
-            echo "l element n'est pas encore en cache";
             $item->tag('ClientsCache');
 
             return $clientRepository->findByUserWithPagination($user, $page, $limit);
@@ -179,8 +178,7 @@ class ClientController extends AbstractController
         SerializerInterface $serializer,
         EntityManagerInterface $em,
         ValidatorInterface $validator,
-        TagAwareCacheInterface $cache,
-        Client $client
+        TagAwareCacheInterface $cache
     ): JsonResponse {
 
         $user = $this->getUser();
