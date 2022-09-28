@@ -42,7 +42,7 @@ class ClientRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByUserWithPagination(User $user, int $page, int $limit): Collection
+    public function findByUserWithPagination(User $user, int $page, int $limit): array
     {
         $qb = $this->createQueryBuilder('c')
             ->where('c.user = :user')
